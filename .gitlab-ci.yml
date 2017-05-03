@@ -1,0 +1,21 @@
+stages:
+  - test
+  - build
+test:
+  tags:
+    - java
+  stage: test
+  script: mvn test
+  except:
+    - master
+build:
+  tags:
+    - java
+  stage: build
+  script:
+    - export CI_LAST_TAG=`git describe --abbrev=0 --tags`
+    - export CI_DEPLOY_TOKEN='ZTLhymH8aRdWs3_-HRMZ'
+    - mvn ru.shoppinglive.plugins:version-maven-plugin:1.6:version -B
+    - mvn ru.shoppinglive.plugins:version-maven-plugin:1.6:release -B
+  only:
+    - master

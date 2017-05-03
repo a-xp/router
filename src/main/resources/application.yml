@@ -1,0 +1,14 @@
+logging.root.level: WARN
+server.port: 8761
+registry.shutdown-old: true
+eureka:
+  instance:
+    hostname: localhost
+    preferIpAddress: true
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+  server:
+    enableSelfPreservation: false
