@@ -43,7 +43,6 @@ public class LocalRegistryDiscoveryClient implements DiscoveryClient {
     @Lazy
     private ZuulHandlerMapping mapping;
     private static Logger logger = LoggerFactory.getLogger(LocalRegistryDiscoveryClient.class);
-    private ApplicationEvent lastEvent;
 
     @Override
     public String description() {
@@ -98,17 +97,8 @@ public class LocalRegistryDiscoveryClient implements DiscoveryClient {
     @Override
     public List<String> getServices() {
         List<String> result = instanceRegistry.getApplications().getRegisteredApplications().stream()
-                .filter(app->{
-                    return
-                    !(lastEvent instanceof EurekaInstanceCanceledEvent
-                            && ((EurekaInstanceCanceledEvent) lastEvent).getAppName().equals(app.getName())) &&
-                    app.getInstances().stream().anyMatch(ii->ii.getStatus().equals(InstanceInfo.InstanceStatus.UP));
-                }).map(app->app.getName().toLowerCase()).collect(Collectors.toList());
-        if(lastEvent instanceof EurekaInstanceRegisteredEvent){
-            String name = ((EurekaInstanceRegisteredEvent) lastEvent).getInstanceInfo().getAppName().toLowerCase();
-            if(!result.contains(name))result.add(name);
-        }
-        lastEvent = null;
+                .filter(app->app.getInstances().stream().anyMatch(ii->ii.getStatus().equals(InstanceInfo.InstanceStatus.UP)))
+                .map(app->app.getName().toLowerCase()).collect(Collectors.toList());
         logger.info("Active services: "+ String.join(", ", result));
         return result;
     }
@@ -160,16 +150,8 @@ public class LocalRegistryDiscoveryClient implements DiscoveryClient {
     }
 
     @EventListener
-    public void onRegister(EurekaInstanceRegisteredEvent event){
-        lastEvent = event;
-        logger.info("Service "+event.getInstanceInfo().getAppName()+" registered. Updating zuul mapping");
-        mapping.setDirty(true);
-    }
-
-    @EventListener
-    public void onCancel(EurekaInstanceCanceledEvent event){
-        lastEvent = event;
-        logger.info("Service "+event.getAppName()+" canceled. Updating zuul mapping");
+    public  void onChange(RegistryChangedEvent event){
+        logger.info("Registry updated. Updating zuul mapping");
         mapping.setDirty(true);
     }
 }
