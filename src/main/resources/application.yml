@@ -1,6 +1,7 @@
-logging.root.level: WARN
+logging.level.root: WARN
 server.port: 8761
 registry.shutdown-old: true
+ribbon.eureka.enabled: false
 eureka:
   instance:
     hostname: localhost

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.netflix.eureka.server.InstanceRegistry;
 import org.springframework.cloud.netflix.eureka.server.event.EurekaInstanceRegisteredEvent;
 import org.springframework.context.event.EventListener;
@@ -17,9 +18,8 @@ import org.springframework.web.client.RestTemplate;
  * Created by rkhabibullin on 04.04.2017.
  */
 @Component
+@ConditionalOnProperty(name="registry.shutdown-old", matchIfMissing = true)
 public class ServiceVersionWatcher {
-    @Value("${registry.shutdown-old}")
-    private boolean enabled = true;
     @Autowired
     private PeerAwareInstanceRegistry instanceRegistry;
     @Autowired
@@ -29,7 +29,6 @@ public class ServiceVersionWatcher {
 
     @EventListener
     public void onInstanceUp(EurekaInstanceRegisteredEvent event){
-        if(!enabled)return;
         InstanceInfo ii = event.getInstanceInfo();
         String id = ii.getInstanceId();
         System.out.println("UP "+id);
