@@ -31,7 +31,8 @@ public class ServiceVersionWatcher {
     public void onInstanceUp(EurekaInstanceRegisteredEvent event){
         InstanceInfo ii = event.getInstanceInfo();
         String id = ii.getInstanceId();
-        System.out.println("UP "+id);
+        String str = ii.getMetadata().get("start-time");
+        logger.info("Instance of "+ii.getAppName()+" with start-time "+ii.getMetadata().get("start-time"));
         Long refStartTime = Long.parseLong(ii.getMetadata().get("start-time"));
         String appName = ii.getAppName();
         Application app = instanceRegistry.getApplication(appName);
