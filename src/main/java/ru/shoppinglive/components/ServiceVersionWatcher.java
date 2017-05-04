@@ -41,13 +41,11 @@ public class ServiceVersionWatcher {
                 if (!instanceInfo.getId().equals(id)) {
                     Long startTime = Long.parseLong(instanceInfo.getMetadata().get("start-time"));
                     if(startTime<refStartTime){
-                        instanceInfo.setStatus(InstanceInfo.InstanceStatus.OUT_OF_SERVICE);
                         try {
                             restTemplate.postForLocation("http://localhost:" + instanceInfo.getPort() + "/shutdown", null);
                         }catch (Exception e){
                             logger.info("Failed to shutdown service "+instanceInfo.getAppName()+" "+instanceInfo.getInstanceId(), e);
                         }
-                        System.out.println("Closing " + instanceInfo.getInstanceId());
                     }
                 }
             });

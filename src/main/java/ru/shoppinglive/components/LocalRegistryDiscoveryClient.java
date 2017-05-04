@@ -96,14 +96,19 @@ public class LocalRegistryDiscoveryClient implements DiscoveryClient {
 
     @Override
     public List<String> getServices() {
-        return instanceRegistry.getApplications().getRegisteredApplications().stream()
+        List<String> result = instanceRegistry.getApplications().getRegisteredApplications().stream()
                 .filter(app->{
-                    if(lastEvent instanceof EurekaInstanceRegisteredEvent
-                            && ((EurekaInstanceRegisteredEvent) lastEvent).getInstanceInfo().getAppName().equals(app.getName()))return true;
-                    if(lastEvent instanceof EurekaInstanceCanceledEvent
-                            && ((EurekaInstanceCanceledEvent) lastEvent).getAppName().equals(app.getName()))return false;
-                    return app.getInstances().stream().anyMatch(ii->ii.getStatus().equals(InstanceInfo.InstanceStatus.UP));
+                    return
+                    !(lastEvent instanceof EurekaInstanceCanceledEvent
+                            && ((EurekaInstanceCanceledEvent) lastEvent).getAppName().equals(app.getName())) &&
+                    app.getInstances().stream().anyMatch(ii->ii.getStatus().equals(InstanceInfo.InstanceStatus.UP));
                 }).map(app->app.getName().toLowerCase()).collect(Collectors.toList());
+        if(lastEvent instanceof EurekaInstanceRegisteredEvent){
+            String name = ((EurekaInstanceRegisteredEvent) lastEvent).getInstanceInfo().getAppName().toLowerCase();
+            if(!result.contains(name))result.add(name);
+        }
+        lastEvent = null;
+        return result;
     }
 
     public static class EurekaServiceInstance implements ServiceInstance {
