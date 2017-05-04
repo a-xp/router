@@ -1,5 +1,6 @@
 package ru.shoppinglive.components;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
@@ -108,6 +109,7 @@ public class LocalRegistryDiscoveryClient implements DiscoveryClient {
             if(!result.contains(name))result.add(name);
         }
         lastEvent = null;
+        logger.info("Active services: "+ String.join(", ", result));
         return result;
     }
 
