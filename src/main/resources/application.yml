@@ -1,5 +1,6 @@
 logging.level.root: INFO
 server.port: 8761
+spring.application.name: router
 ribbon:
   eureka.enabled: false
   ReadTimeout: 120000
@@ -16,6 +17,6 @@ eureka:
     registerWithEureka: false
     fetchRegistry: false
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://127.0.0.1:8761/eureka
   server:
     enableSelfPreservation: false
