@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.eureka.server.InstanceRegistry;
 import org.springframework.cloud.netflix.eureka.server.InstanceRegistryProperties;
-import org.springframework.cloud.netflix.zuul.filters.discovery.DiscoveryClientRouteLocator;
+import org.springframework.cloud.netflix.zuul.web.ZuulHandlerMapping;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class CustomInstanceRegistry extends InstanceRegistry {
 
     @Autowired
     @Lazy
-    protected DiscoveryClientRouteLocator routeLocator;
+    protected ZuulHandlerMapping zuulHandlerMapping;
 
     static final Logger logger = LoggerFactory.getLogger(CustomInstanceRegistry.class);
 
@@ -40,8 +40,7 @@ public class CustomInstanceRegistry extends InstanceRegistry {
         if(!info.getMetadata().containsKey("startTime"))
             info.getMetadata().put("startTime", String.valueOf(System.currentTimeMillis()));
         super.register(info, leaseDuration, isReplication);
-        logger.info("Refreshing route locator "+routeLocator.getClass().getName());
-        routeLocator.refresh();
+        zuulHandlerMapping.setDirty(true);
     }
 
     @Override
@@ -49,15 +48,13 @@ public class CustomInstanceRegistry extends InstanceRegistry {
         if(!info.getMetadata().containsKey("startTime"))
             info.getMetadata().put("startTime", String.valueOf(System.currentTimeMillis()));
         super.register(info, isReplication);
-        logger.info("Refreshing route locator "+routeLocator.getClass().getName());
-        routeLocator.refresh();
+        zuulHandlerMapping.setDirty(true);
     }
 
     @Override
     protected boolean internalCancel(String appName, String id, boolean isReplication) {
         boolean result = super.internalCancel(appName, id, isReplication);
-        logger.info("Refreshing route locator "+routeLocator.getClass().getName());
-        routeLocator.refresh();
+        zuulHandlerMapping.setDirty(true);
         return result;
     }
 
