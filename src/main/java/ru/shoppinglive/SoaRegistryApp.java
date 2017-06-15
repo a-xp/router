@@ -25,9 +25,4 @@ public class SoaRegistryApp {
                 .profiles(EnvCheck.getProfile()).run(args);
     }
 
-    @Bean
-    public RestTemplate restTemplate(){
-        return new RestTemplate();
-    }
-
 }

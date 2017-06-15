@@ -1,7 +1,13 @@
 logging.level.root: INFO
 server.port: 8761
-registry.shutdown-old: true
-ribbon.eureka.enabled: false
+ribbon:
+  eureka.enabled: false
+  ReadTimeout: 120000
+  ConnectTimeout: 5000
+  MaxAutoRetries: 1
+  MaxAutoRetriesNextServer: 2
+  OkToRetryOnAllOperations: true
+hystrix.command.default.execution.timeout.enabled: false
 eureka:
   instance:
     hostname: localhost

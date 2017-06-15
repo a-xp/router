@@ -149,9 +149,4 @@ public class LocalRegistryDiscoveryClient implements DiscoveryClient {
         }
     }
 
-    @EventListener
-    public  void onChange(RegistryChangedEvent event){
-        logger.info("Registry updated. Updating zuul mapping");
-        mapping.setDirty(true);
-    }
 }
